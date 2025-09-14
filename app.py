@@ -1,5 +1,6 @@
 import streamlit as st
 from pypdf import PdfReader, PdfWriter
+from copy import deepcopy
 import io
 
 st.set_page_config(page_title="PDF Splitter", page_icon="✂️")
@@ -18,13 +19,13 @@ if uploaded_file:
         height = float(page.mediabox.height)
 
         # правая половина
-        right_page = page.copy()
+        right_page = deepcopy(page)
         right_page.mediabox.lower_left = (width / 2, 0)
         right_page.mediabox.upper_right = (width, height)
         writer.add_page(right_page)
 
         # левая половина
-        left_page = page.copy()
+        left_page = deepcopy(page)
         left_page.mediabox.lower_left = (0, 0)
         left_page.mediabox.upper_right = (width / 2, height)
         writer.add_page(left_page)
@@ -34,6 +35,7 @@ if uploaded_file:
     writer.write(output)
     output.seek(0)
 
+    st.success("✅ PDF успешно обработан!")
     st.download_button(
         "📥 Скачать готовый PDF",
         data=output,
